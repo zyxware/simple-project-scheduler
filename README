@@ -1,18 +1,20 @@
 Google Spreadsheet Scheduler application
 		
-This is a simple scheduling application using Google Spreadsheets and Google Apps Scripts. The application is primarily targeted at small and medium enterprises who are looking at something small, easy to use and free to use. This is definitely not something that will scale for bigger companies with a lot of employees. But for small companies with 0-20 people this should work perfectly. The application allows for scheduling of resources at an hour level visibility and scheduling of phases of development at a day level visibility. The application also includes a couple of sample sheets that should give an idea about how the system should be used.
+This is a simple scheduling and resourcce allocation application using Google Spreadsheets and Google Apps Scripts. The application is primarily targeted at small and medium enterprises who are looking at something small, easy to use and free to use. This is definitely not something that will scale for bigger companies with a lot of employees. But for small companies with 0-20 people this should work perfectly. The application allows for scheduling of resources at an hour level visibility and scheduling of phases of development at a day level visibility. The application also includes a couple of sample sheets that should give an idea about how the system should be used.
 
 License
 
-Since this application was written on top of Google Spreadsheets application it would be bound by whatever restrictions imposed by Google. For whatever part that Google does not impose any particular restriction on should be considered as released under a compatible Free Software License. You are free to use this application for personal or commercial use or whatever use you deem it to be fit for. We shall not be liable for any issues arising out of the use of the application and you would be using it solely at your own risk and discretion.
+Since this application was written on top of Google Spreadsheets application it would be bound by whatever restrictions imposed by Google. For whatever part that Google does not impose any particular restriction on, they should be considered as released under a compatible Free Software License. You are free to use this application for personal or commercial use or whatever use you deem it to be fit for. We shall not be liable for any issues arising out of the use of the application and you would be using it solely at your own risk and discretion.
 
 Source
 
 The source code for the Google Apps Script being used as part of this application is available at http://github.com/zyxware/simple-spreadsheet-scheduler.
 
+You should be able to download the full spreadsheet as soon as we get it published to the google spreadsheet templates section. Watch here for the link.
+
 Support
 
-This application was developed as an internal tool and we would continue to improve and optimize this for as long as we use it. If however you would like us to customize this orbuild a similar or related system using Google App Engine we would be available for commercial support.
+This application was developed as an internal tool and we would continue to improve and optimize this for as long as we use it. If however you would like us to customize this or build a similar or related system using Google App Engine we would be available for commercial support.
 
 About Us
 
