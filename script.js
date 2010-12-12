@@ -1,10 +1,10 @@
 // Hook onOpen called at the time of opening the spreadsheet
 function onOpen() {
-  Browser.msgBox('Starting');
   var menuEntries = [];
   menuEntries.push({name: "Sort by Member", functionName: "sortByMember"});
   menuEntries.push({name: "Sort by Project", functionName: "sortByProject"});
   menuEntries.push({name: "Reload Config", functionName: "reloadConfig"});
+  menuEntries.push({name: "Renumber Rows", functionName: "renumberRows"});
   menuEntries.push({name: "About App", functionName: "aboutApp"});
   SpreadsheetApp.getActiveSpreadsheet().addMenu("Schedule Utils", menuEntries);
 }
@@ -25,9 +25,19 @@ function reloadConfig() {
   var sa = new SchedulerApplication();
   sa.loadData(true);
 }
+// Menu item added to custom menu to renumber the first column
+function renumberRows() {
+  if (Browser.msgBox('Please ensure that you have sorted the rows by project before proceeding. ' +
+      'Press OK to continue, CANCEL to stop', 
+      Browser.Buttons.OK_CANCEL) == 'ok') {
+    var sa = new SchedulerApplication();
+    sa.renumberRows();
+  }
+}
+
 // Menu item added to custom menu to reload the configuration
 function aboutApp() {
-  Browser.msgBox('Application developed and maintained by Zyxware Technologies. You can get support and the latest version from http://www.github.com/zyxware/google-spreadsheet-scheduler');
+  Browser.msgBox('Simple Spreadsheet Scheduler', 'Application developed and maintained by Zyxware Technologies. You can get support and the latest version from http://www.github.com/zyxware/simple-spreadsheet-scheduler', Browser.Buttons.OK);
 }
 // Hook onEdit called whenever a cell is edited
 function onEdit(event) {
@@ -120,8 +130,10 @@ function SchedulerApplication() {
     }
     if (code == '' || (typeof loaded == 'undefined') || force) {
       code = this.reloadData();
-      //Browser.msgBox(code);  
-      this.s.getRange('A1').setComment(code)  
+      //Browser.msgBox(code);
+      if (!this.errors) {
+        this.s.getRange('A1').setComment(code);
+      }  
     }
   }  
   
@@ -217,13 +229,31 @@ function SchedulerApplication() {
   };
 
   // Get the named range for the current sheet
-  this.getNamedRange = function(name) {
+  this.getNamedRange = function (name) {
     //Browser.msgBox(rangeNames[name]);
     if (typeof rangeNames[name] == 'undefined')
       return null;
     else
       return this.s.getRange(rangeNames[name]);
   };
+  
+  this.renumberRows = function () {
+    if (!this.errors) {
+      var i, imin, imax, j;
+      j = 0;
+      imin = Number(config['schedule_start']);
+      imax = Number(config['schedule_end']);
+      for (var i = imin; i <= imax; i++) {
+        j++;
+        this.s.getRange('A' + i).setValue(j);
+      }
+      Browser.msgBox('Schedule rows renumbed from 1 to ' + j);
+    } 
+    else {
+      Browser.msgBox('There are errors in this spreadsheet. ' +
+        'Please fix those first before trying to use the functionalities');
+    } 
+  }
     
   // Check for a given key in the array and return the value if the key exists or return null
   // If the value for the key is null it will return null itself  
