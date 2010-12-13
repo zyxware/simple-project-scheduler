@@ -2,15 +2,67 @@ Google Spreadsheet Scheduler application
 		
 This is a simple scheduling and resourcce allocation application using Google Spreadsheets and Google Apps Scripts. The application is primarily targeted at small and medium enterprises who are looking at something small, easy to use and free to use. This is definitely not something that will scale for bigger companies with a lot of employees. But for small companies with 0-20 people this should work perfectly. The application allows for scheduling of resources at an hour level visibility and scheduling of phases of development at a day level visibility. The application also includes a couple of sample sheets that should give an idea about how the system should be used.
 
+FAQ
+
+1) How do I add a new developer?
+
+You have to add the developer by adding a new row for the developer in the Leave & Holidays section and also in the All Projects section. Remember to "Reload Config" from the Schedules menu after you do this.
+
+2) How do I add a new project?
+
+You can add a new project by adding the corresponding project row. Remember to "Reload Config" from the Schedules menu after you do this.
+
+3) How do I add schedules for a new month?
+
+You can simply copy and paste the template into a sheet for the new month to do this.
+
+4) How do I allocate a new developer for a given project?
+
+You can add a new developer for a project by adding a row for that developer under that project. You can then allocate hours of that developer by entering the corresponding values against the developer. Remember to "Reload Config" from the Schedules menu after you do this.
+
+5) Where can I see the total allocation for an employee across all projects?
+
+When you edit the allocation for an employee, his total allocation will be tallied and will be pulled up to the top of the sheet where you can use it for your immediate reference while scheduling his/her time for a new project.
+
+6) How do I see the details of all allocation for an employee?
+
+You can see this by sorting the sheet by Member from the "Shedule Utils" menu
+
+7) I can't see the Schedule Utils menu?
+
+That is because you are still viewing the template document and that is in read only mode. You have to copy the template and create your own schedules spreadsheet and also enable execution of the script before you can see the Schedule Utils menu.
+
+8) When do I usually have to "Reload Config"?
+
+Whenever you add a new row in the spreadsheet you have to "Reload Config"
+
+9) When do I "Renumber Rows"?
+
+When you add a new employee to a project, remember to re-number rows to ensure that your rows are sortable and they come back to what it used to be ordered by.
+
+10) I get a message that 'There are errors in this spreadsheet.'. What do I do?
+
+You have to ensure that the row before the first row with the schedule data for the projects has a # in the first column and the row after the last schedule data row has to have ## in the first column. Also you have to have LH in the first column corresponding to the Leave & Holidays row and FS in the first column corresponding to the All projects row. See the template sheet for details.
+
+11) I get the message starting with 'Invalid index column(A)'. What do I do?
+
+Read FAQ 10.
+
+12) I get the message 'Please check the spelling of the name'. What do I do?
+
+The error message tells you clearly what you need to do. The name you have entered for that employee is not present in the list of employees in the Leave & Holiday section and the All Projects section.
+
 License
 
 Since this application was written on top of Google Spreadsheets application it would be bound by whatever restrictions imposed by Google. For whatever part that Google does not impose any particular restriction on, they should be considered as released under a compatible Free Software License. You are free to use this application for personal or commercial use or whatever use you deem it to be fit for. We shall not be liable for any issues arising out of the use of the application and you would be using it solely at your own risk and discretion.
 
 Source
 
-The source code for the Google Apps Script being used as part of this application is available at http://github.com/zyxware/simple-spreadsheet-scheduler.
+The source code for the Google Apps Script being used as part of this application is available at http://github.com/zyxware/simple-project-scheduler.
 
-You should be able to download the full spreadsheet as soon as we get it published to the google spreadsheet templates section. Watch here for the link.
+You can copy the template from http://bit.ly/gWmypz 
+
+The functionalities and automatic calculations will only work once you copy the template and open your copy. You will also have to allow permissions for the script to execute before it can run the automatic calculations
 
 Support
 
@@ -19,3 +71,5 @@ This application was developed as an internal tool and we would continue to impr
 About Us
 
 We are a software development company. We work primarily in the web application domain but we tend to dabble in other related areas as well. We love Free Software and try to contribute to it both through direct code contributions as well as through community level promotional activities. You can see more about us at www.zyxware.com
+
+
