@@ -37,10 +37,14 @@ function renumberRows() {
 
 // Menu item added to custom menu to reload the configuration
 function aboutApp() {
-  Browser.msgBox('Simple Spreadsheet Scheduler', 'Application developed and maintained by Zyxware Technologies. You can get support and the latest version from http://www.github.com/zyxware/simple-spreadsheet-scheduler', Browser.Buttons.OK);
+  Browser.msgBox('Simple Project Scheduler', 'Application developed and maintained by Zyxware Technologies. You can get support and the latest version from http://www.github.com/zyxware/simple-project-scheduler', Browser.Buttons.OK);
 }
 // Hook onEdit called whenever a cell is edited
 function onEdit(event) {
+
+  if (s.getName() == 'readme')
+    return;
+
   var sa = new SchedulerApplication();
   //sa.load();
 
@@ -276,4 +280,4 @@ function dba(obj) {
   }
   Browser.msgBox(string);
 }
-â€‹
+â€
