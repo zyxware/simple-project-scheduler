@@ -52,6 +52,10 @@ Read FAQ 10.
 
 The error message tells you clearly what you need to do. The name you have entered for that employee is not present in the list of employees in the Leave & Holiday section and the All Projects section.
 
+13) Can I rename sheets? 
+
+No you can not currently rename sheets. Schedule sheets also will have to follow the naming convention "Mmm YYYY" if you are creating schedule sheets on your own.
+
 License
 
 Since this application was written on top of Google Spreadsheets application it would be bound by whatever restrictions imposed by Google. For whatever part that Google does not impose any particular restriction on, they should be considered as released under a compatible Free Software License. You are free to use this application for personal or commercial use or whatever use you deem it to be fit for. We shall not be liable for any issues arising out of the use of the application and you would be using it solely at your own risk and discretion.
