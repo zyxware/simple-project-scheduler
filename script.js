@@ -1,4 +1,9 @@
 var TEMPLATE_URL = 'http://bit.ly/gWmypz';
+var PROJECT_URL = 'http://www.github.com/zyxware/simple-project-scheduler';
+
+var DEBUG = false;
+// debug level 1 least verbose, bigger values more verbosity
+var DEBUG_LEVEL = 1;
 
 // Hook onOpen called at the time of opening the spreadsheet
 function onOpen() {
@@ -58,11 +63,11 @@ function renumberRows() {
 
 // Menu item added to custom menu to reload the configuration
 function aboutApp() {
-  alert('Application developed and maintained by Zyxware Technologies. You can get support and the latest version from http://www.github.com/zyxware/simple-project-scheduler');
+  alert('Application developed and maintained by Zyxware Technologies. You can get support and the latest version from ' + PROJECT_URL);
 }
 // Hook onEdit called whenever a cell is edited
 function onEdit(event) {
-
+  return;
   if (s.getName() == 'readme')
     return;
 
@@ -122,14 +127,11 @@ function onEdit(event) {
 
 function SchedulerApplication() {
 
-  var that = this;
   var rangeNames = Array();
-  var sheets = Array();
   var sheetInfo = Array();
   var config = Array();
   var employees = Array();
   var employeeIndex = Array();
-  var holidays = Array();
 
   this.init = function () {
     // Helper globals
@@ -150,8 +152,9 @@ function SchedulerApplication() {
   // Load all the data for the current sheet
   // If this has already been loaded to sheet state then load from that.
   this.loadSheetData = function(force) {
+    var code;
     if (!force && this.isSheetDataParsed()) {
-      //Browser.msgBox('loading');
+      debug('loading sheet data', 1);
       code = this.getSheetDataCode();
     }
     if (!this.isSheetDataParsed() || force || code == '') {
@@ -163,9 +166,9 @@ function SchedulerApplication() {
     // Load the data
     if (code != '') {
       //Browser.msgBox(code);
-      result = eval(code);
-      //Browser.msgBox(loaded);
+      eval(code);
     }
+    return !this.errors;
   }
  
   this.isSheetDataParsed = function () {
@@ -175,11 +178,11 @@ function SchedulerApplication() {
     return false;
   }
   
-  this.getSheetDataCode() {
+  this.getSheetDataCode = function () {
     return this.ss.getSheetByName('config').getRange(config['sheets'][this.s.getName()]).getComment();
   }
   
-  this.saveSheetDataCode(code) {
+  this.saveSheetDataCode = function (code) {
     return this.ss.getSheetByName('config').getRange(config['sheets'][this.s.getName()]).setComment(code);
   }
   
@@ -261,7 +264,7 @@ function SchedulerApplication() {
 
   this.loadConfig = function(force) {
     var code = '';
-    //Browser.msgBox('loading');
+    debug('loading config');
     var cs = this.ss.getSheetByName('config');
     // If the config sheet does not exist in the application set error
     if (!cs) {
@@ -272,12 +275,17 @@ function SchedulerApplication() {
       return false;
     }
     if (!force) {
-      //Browser.msgBox('loading');
+      debug('loading from file', 1);
       code = this.getConfigCode();
+    }
+    else {
+      debug('loadConfig called with force', 1);
     }
     // If forced or if somebody had deleted the code manually reload it
     if (force || code == '') {
-      code = this.parseConfig();
+      debug('parsing config sheet', 1);
+      code = this.parseConfig(cs);
+      debug('got code: ' + code);
       if (!this.errors) {
         this.saveConfigCode(code);
       }
@@ -285,9 +293,11 @@ function SchedulerApplication() {
     if (code != '') {
       //Browser.msgBox(code);
       eval(code);
-      //Browser.msgBox(loaded);
     }
     //Browser.msgBox(code);
+    // Also load the information about the sheets
+    this.loadSheetInfo(cs, force);
+    return !this.errors;
   }
   
   this.getConfigCode = function () {
@@ -295,17 +305,20 @@ function SchedulerApplication() {
   }
 
   this.saveConfigCode = function (code) {
+    debug('saving config', 1);
+    dba(config);
     if (code == '') {
-      code += generateEval('config', config);
+      code = generateEval('config', config);
       //Browser.msgBox(code);
     }  
+    debug(code, 2);
     this.ss.getSheetByName('config').getRange('A1').setComment(code);
     return code;
   }
 
   // Load config for the spreadsheet
   this.parseConfig = function(cs, force) {
-    //Browser.msgBox('loading');
+    debug('start parsing config');
     // Get markers from the first column
     //Browser.msgBox('Loading config index');
     var index = cs.getRange("A1:A1000").getValues();
@@ -317,6 +330,7 @@ function SchedulerApplication() {
     for (i = 0; i < num; i++) {
       // Start of members list
       if (index[i][0] == 'Members') {
+        debug('parsing member list', 2);
         // +1 to get the spreadsheet index, +1 to get next row after title row
         config['members_list_start'] = i+1+1;
         //-1 to get last non empty row
@@ -336,6 +350,7 @@ function SchedulerApplication() {
       }
       // Start of projects list
       if (index[i][0] == 'Projects' && i > config['members_list_end']) {
+        debug('parsing project list', 2);
         // +1 to get the spreadsheet index, +1 to get next row after title row
         config['projects_list_start'] = i+1+1;
         //-1 to get last non empty row
@@ -363,6 +378,7 @@ function SchedulerApplication() {
       }
       // Start of phases list, +1 to get next row after title row
       if (index[i][0] == 'Phases' && i > config['projects_list_end']) {
+        debug('parsing phases list', 2);
         config['phases_list_start'] = i+1+1;
         //-1 to get last non empty row
         config['phases_list_end'] = getNextEmptyCell(cs.getRange('B' + config['phases_list_start']))-1;
@@ -379,6 +395,7 @@ function SchedulerApplication() {
       }
       // Start of holidays list, +1 to get next row after title row
       if (index[i][0] == 'Holidays' && i > config['phases_list_end']) {
+        debug('parsing holidays list', 2);
         config['holidays_list_start'] = i+1+1;
         //-1 to get last non empty row
         config['holidays_list_end'] = getNextEmptyCell(cs.getRange('B' + config['holidays_list_start']))-1;
@@ -404,9 +421,10 @@ function SchedulerApplication() {
       }
       // Start of config list, +1 to get next row after title row
       if (index[i][0] == 'Params' && i > config['holidays_list_end']) {
+        debug('parsing params list', 2);
         config['params_list_start'] = i+1+1;
         //-1 to get last non empty row
-        config['params_list_end'] = getNextEmptyCell(cs.getRange('B' + config['param_list_start']))-1;
+        config['params_list_end'] = getNextEmptyCell(cs.getRange('B' + config['params_list_start']))-1;
         if (config['params_list_end'] < 0)
           j--;
         else {
@@ -429,7 +447,7 @@ function SchedulerApplication() {
               case 'offDays':
                 var offDays = list[k][1].replace(/\s*/g, "").toLowerCase().split(",");
                 for (l in offDays) {
-                  if ("sun,mon,tue,wed,thu,fri,sat".search(offDays[l]) < 0) {
+                  if ("|sun|mon|tue|wed|thu|fri|sat|".search('\\|'+ offDays[l] +'\\|') < 0) {
                     this.errors = true;
                     alert('Invalid config value: Invalid value (' + offDays[l] + ') for parameter - ' + list[k][0] + '. ' +                        
                           'Please read the instructions for filling in the parameters.');
@@ -454,7 +472,11 @@ function SchedulerApplication() {
                 config['params']['releaseMarker']['bgColor'] = cell.getBackgroundColor();
                 break;
               case 'curMemberBg':
-               config['params']['curMemberBg'] = cell.getBackgroundColor();
+                config['params']['curMemberBg'] = cell.getBackgroundColor();
+                break;
+              case 'skipSheets':
+                var skipSheets = list[k][1].replace(/\s*,\s*/g, ",").toLowerCase().split(",");
+                config['params']['skipSheets'] = '\\|'+ skipSheets.join('|') + '\\|';
                 break;
               default:
                 this.errors = true;
@@ -475,9 +497,139 @@ function SchedulerApplication() {
       this.errors = true;
       return false;
     }
-    //dba(config);
+    dba(config);
+    debug('done parsing config');
+    return generateEval('config', config);
   }
-
+  
+  // Function to load the sheetinfo data
+  this.loadSheetInfo = function (cs, force) {
+    var code;
+    // Always load current sheetInfo code. Only update this value if forced
+    code = this.getSheetInfoCode();
+    if (force || code == '') {
+      code = this.parseSheetInfo(cs);
+      if (!this.errors) {
+        this.saveSheetInfoCode(code);
+      }
+    }
+    // Load the data
+    if (code != '') {
+      //Browser.msgBox(code);
+      eval(code);
+    }
+    return !this.errors;
+  }
+  
+  // Get the code for the sheetinfo data
+  this.getSheetInfoCode = function () {
+    return this.ss.getSheetByName('config').getRange('B1').getComment();
+  }
+  
+  // Save the code for the sheetinfo data
+  this.saveSheetInfoCode = function (code) {
+    debug('saving sheetinfo', 1);
+    dba(sheetInfo);
+    if (code == '') {
+      code = generateEval('sheetInfo', sheetInfo);
+      //Browser.msgBox(code);
+    }
+    debug(code, 2);
+    this.ss.getSheetByName('config').getRange('B1').setComment(code);
+    return code;
+  }
+  
+  // Parse sheets and build sheetinfo data
+  this.parseSheetInfo = function (cs) {
+    debug('start parsing sheetInfo');
+    var sheets = this.ss.getSheets();
+    var isValidSheet = Array();
+    var stores = Array();
+    var i, j, k, l;
+    // Do not recreate the object if it already exists.
+    if (typeof(sheetInfo) != 'object') {
+      sheetInfo = Array();
+    }
+    // Invalidate current sheetInfo records
+    for (j in sheetInfo) {
+      isValidSheet[j] = false;
+    }
+    var skipSheets = config['params']['skipSheets'];
+    debug('Will skip ' + skipSheets, 2);
+    for (i = 0; i < sheets.length; i++) {
+      var sheetName = sheets[i].getName();
+      debug('Processing ' + sheetName, 1);
+      // Skip template sheets
+      if (('|readme|template|config|').search('\\|'+ sheetName +'\\|') >= 0) {
+        debug('Skipping ' + '\\|'+ sheetName.toString() +'\\|', 2);
+        debug('skipSheets.search ' + ('|readme|template|config|').search('\\|'+ sheetName.toString() +'\\|'), 3);
+        continue;
+      }  
+      // Skip sheets that are configured to be skipped  
+      if (trim(skipSheets) != '' && skipSheets.search('\\|'+ sheetName.toLowerCase() +'\\|') >= 0) {
+        debug('Skipping ' + sheetName, 2);
+        debug('trim(skipSheets) ' + trim(skipSheets), 3);
+        debug('skipSheets.search ' + skipSheets.search('\\|'+ sheetName +'\\|'), 3);
+        continue;  
+      }
+      t = sheetName.toLowerCase().split(" ");
+      var month = t[0]
+      var year = parseInt(t[1]);
+      // Check if the sheetnames are valid
+      if (("|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|".search('\\|'+ month +'\\|') < 0)
+            || (year < 2010) || (year > 2020)
+      ) {
+        this.errors = true;
+        alert('Invalid sheet name: ' + sheetName + '. ' +                        
+              'Sheets should be named in the format "Mmm YYYY". Please read the README provided at the project page - ' + PROJECT_URL);
+        return false;      
+      }
+      // Create only if not initialized earlier
+      if (typeof(sheetInfo[sheetName]) != 'object') {
+        sheetInfo[sheetName] = Array();
+      }
+      sheetInfo[sheetName]['month'] = month;
+      sheetInfo[sheetName]['year'] = year;
+      isValidSheet[sheetName] = true;
+    }
+    var isAvailable;
+    debug('Processing store numbers', 2);
+    // Iterate through all sheets and assign stores or continue using same stores
+    for (sheetName in sheetInfo) {
+      if (isValidSheet[sheetName]) {
+        // Allocate stores for sheets that don't already have one.
+        if (typeof(sheetInfo[sheetName]['store']) != 'number') {
+          // Assign stores from A3 onwards to the right in the config sheet
+          for (k = 3; k < 1000; k++) {
+            isAvailable = true;
+            for (j in sheetInfo) {
+              // Check among valid sheets if store is used
+              if (sheetInfo[j]['store'] && isValidSheet[j] && sheetInfo[j]['store'] == k) {
+                isAvailable = false;
+                break;
+              }
+            }
+            if (isAvailable) {
+              sheetInfo[sheetName]['store'] = k;
+              break;
+            }
+          }
+          if (k == 1000) {
+            this.errors = true;
+            alert('Errors in assigning store. Please report this issue at - ' + PROJECT_URL);
+            return false;      
+          }
+        }
+      }
+      // If the sheet is no longer valid delete the item
+      else {
+        delete sheetInfo[sheetName];
+      }
+    }
+    dba(sheetInfo);
+    debug('done parsing sheetInfo');
+    return generateEval('sheetInfo', sheetInfo);
+  }
 
   // Create a sheet for the next month to the schedule
   this.addNextMonth = function () {
@@ -529,9 +681,11 @@ function SchedulerApplication() {
   // Generate the code that can be eval'd to regenerate the config
   // already parsed.
   function generateEval(name, arr) {
-    code = '';
+    var code = '';
+    debug('generating eval for ' + name, 1);
     //code = name + '=Array();';
     for (var key in arr) {
+      debug(code, 5);
       if (typeof(arr[key]) == 'number') {
         code += name + "['" + key + "'] = " + arr[key] + ";\n";
       }
@@ -544,7 +698,7 @@ function SchedulerApplication() {
         code += generateEval(name + "['" + key + "']", arr[key]);
       }
       else {
-        throw "Invalid data type("+ typeof(arr[key]) +") passed";
+        throw "Invalid data type("+ typeof(arr[key]) +") passed for " + name + " with key " + key;
       }
     }
     return code;
@@ -585,7 +739,8 @@ function trim(s) {
  * debug functions
  */
 function dba(obj) {
-  Browser.msgBox(obj2string(obj));
+  if (DEBUG)‌
+    Browser.msgBox(obj2string(obj));
 }
 
 function obj2string(obj) {
@@ -613,6 +768,15 @@ function confirm(prompt, buttons) {
   return alert(prompt, buttons);
 }
 
+// Debug function. Print message if debug level is <= current debug level
+function debug(message, level) {
+  if (typeof(level) == 'undefined')
+    level = 0;
+  if (DEBUG && (level <= DEBUG_LEVEL)) {
+    alert(message, Browser.Buttons.OK);
+  }
+}
+
 function showGui() {
   var doc = SpreadsheetApp.getActiveSpreadsheet();
 // create UiApp object named app
@@ -630,7 +794,8 @@ function showGui() {
   doc.show(app);
 }
 function d() {
-
+  debug('a', 5);
+  debug('b', 6);
 }
 
 /*
