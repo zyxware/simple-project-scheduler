@@ -6,11 +6,11 @@ FAQ
 
 1) How do I add a new developer?
 
-You have to add the developer by adding a new row for the developer in the Leave & Holidays section and also in the All Projects section. Remember to "Reload Config" from the Schedules menu after you do this.
+You have to add the developer by adding a new row for the developer in the Leave & Holidays section and also in the Total Allocation section. 
 
 2) How do I add a new project?
 
-You can add a new project by adding the corresponding project row. Remember to "Reload Config" from the Schedules menu after you do this.
+You can add a new project by adding the corresponding project row. 
 
 3) How do I add schedules for a new month?
 
@@ -18,7 +18,7 @@ You can simply copy and paste the template into a sheet for the new month to do 
 
 4) How do I allocate a new developer for a given project?
 
-You can add a new developer for a project by adding a row for that developer under that project. You can then allocate hours of that developer by entering the corresponding values against the developer. Remember to "Reload Config" from the Schedules menu after you do this.
+You can add a new developer for a project by adding a row for that developer under that project. You can then allocate hours of that developer by entering the corresponding values against the developer. 
 
 5) Where can I see the total allocation for an employee across all projects?
 
@@ -34,7 +34,7 @@ That is because you are still viewing the template document and that is in read 
 
 8) When do I usually have to "Reload Config"?
 
-Whenever you add a new row in the spreadsheet you have to "Reload Config"
+You no longer have to "Reload Config". It is now automatically done.
 
 9) When do I "Renumber Rows"?
 
