@@ -2,6 +2,10 @@ Google Spreadsheet Scheduler application
 		
 This is a simple scheduling and resource allocation application using Google Spreadsheets and Google Apps Scripts. The application is primarily targeted at small and medium enterprises who are looking at something small, easy to use and free to use. This is definitely not something that will scale for bigger companies with a lot of employees. But for small companies with 0-20 people this should work perfectly. The application allows for scheduling of resources at an hour level visibility and scheduling of phases of development at a day level visibility. The application also includes a couple of sample sheets that should give an idea about how the system should be used.
 
+If you like this software consider donating to FSF or join FSF
+
+http://www.fsf.org/associate/support_freedom/join_fsf?referrer=7991
+
 FAQ
 
 1) How do I add a new developer?
